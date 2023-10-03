@@ -1,81 +1,54 @@
-import requests
-from bs4 import BeautifulSoup
-import re
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
 from konlpy.tag import Okt
 from collections import Counter
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud
+import requests
+from bs4 import BeautifulSoup
 
-def crawl_daum_news_home(url, keyword=None):
-    response = requests.get(url)
-    if response.status_code != 200:
-        print("페이지를 찾지 못했습니다..ㅜ")
-        return
+# 한글 폰트 설정
+font_path = '/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf'  # 한글 폰트 파일 경로
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+# 네이버 IT 기사 페이지 URL
+url = "https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=105"
 
-    news_articles = []
-    article_tags = soup.find_all('strong', class_='tit_g')
-    for tag in article_tags:
-        article_title = tag.get_text().strip()
-        article_link = tag.a['href']
-        if keyword is None or keyword.lower() in article_title.lower():
-            article = {
-                'title': article_title,
-                'link': article_link
-            }
-            news_articles.append(article)
+# 페이지 요청
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
 
-    return news_articles
+# 기사 제목을 담을 리스트
+titles = []
 
-def crawl_daum_news_article(url):
-    response = requests.get(url)
-    if response.status_code != 200:
-        print("기사를 불러오지 못했습니다...ㅜ")
-        return
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+article_tags = soup.select('.cluster_text a')  # 예시 태그 및 클래스
 
-    article_content = soup.find('div', class_='article_view')
-    if article_content:
-        content = article_content.get_text()
-    else:
-        content = "글이 없는 기사 입니다."
+for article_tag in article_tags:
+    title = article_tag.get_text(strip=True)  # 공백 제거
+    titles.append(title)
 
-    return content
 
-def generate_wordcloud_from_text(text_data):
-    text_data = re.sub(r"[^ㄱ-ㅎㅏ-ㅣ가-힣\s]", "", text_data)
-    okt = Okt()
-    tokens = okt.nouns(text_data)
-    stopwords = ["을", "를", "이", "가", "은", "는", "의"]
-    filtered_tokens = [word for word in tokens if word not in stopwords]
-    word_counts = Counter(filtered_tokens)
-    wordcloud = WordCloud(font_path="/content/drive/MyDrive/Colab Notebooks/NanumGothic-ExtraBold.ttf", background_color='white').generate_from_frequencies(word_counts)
-    plt.figure(figsize=(10, 8))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
+# KoNLPy를 사용하여 명사 추출
+okt = Okt()
+nouns = []
+for title in titles:
+    nouns += okt.nouns(title)
 
-if __name__ == "__main__":
-    news_url = 'https://news.daum.net/'
-    find_keyword = input("검색할 키워드를 입력하세요: ")
-    
-    all_news_data = []
-    news_data = crawl_daum_news_home(news_url, keyword=find_keyword)
+# 명사 빈도수 체크
+noun_counter = Counter(nouns)
 
-    for article in news_data:
-        title = article['title'].replace('\n', '').strip()
-        article_url = article['link']
-        article_content = crawl_daum_news_article(article_url)
+# WordCloud 생성
+wordcloud = WordCloud(
+    font_path=font_path,  # 한글 폰트 경로 지정
+    background_color='white',
+    width=800,
+    height=400,
+    stopwords=STOPWORDS,
+)
 
-        all_news_data.append({
-            'title': title,
-            'link': article_url,
-            'content': article_content.replace('\n', '').strip()
-        })
+# 단어 빈도 데이터를 WordCloud에 넣고 생성
+wordcloud.generate_from_frequencies(noun_counter)
 
-    text_data = str(all_news_data)
-
-    for selected_news in all_news_data:
-        generate_wordcloud_from_text(selected_news['content'])
+# 시각화
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.show()
