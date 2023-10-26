@@ -25,7 +25,7 @@ ChromaDB를 활용하여 K-Drama(한국 드라마) 추천 시스템을 구현함
 ●ChromaDB 초기화
 
     client = chromadb.PersistentClient(path="../data")
-ChromaDB를 사용하기 위해 ChromaDB 클라이언트를 초기화합니다. 데이터 경로를 지정하여 ChromaDB를 설정합니다.
+ChromaDB를 사용하기 위해 ChromaDB 클라이언트를 초기화. 데이터 경로를 지정하여 ChromaDB를 설정.
 
 ●컬렉션 생성
 
