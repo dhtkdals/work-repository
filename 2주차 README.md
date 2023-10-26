@@ -20,25 +20,21 @@
 1.     crawl_daum_news_home(url, keyword=None)
 Daum 뉴스 크롤링 함수
 def crawl_daum_news_home(url, keyword=None):
-    코드 내용
 이 함수는 Daum 뉴스 홈페이지에서 뉴스 기사 제목과 링크를 크롤링하는 함수 이 함수는 원하는 키워드로 뉴스를 필터링할 수 있음.
 
 2.     tokenize_text(text)
  Konlpy Okt를 사용하여 텍스트 토큰화
 def tokenize_text(text):
-     코드 내용
 이 함수는 한국어 텍스트를 토큰화하는 함수로, Konlpy 라이브러리의 Okt를 사용함. 이 과정은 텍스트를 의미 있는 단어로 분해함.
 
 3. remove_stopwords(tokens)
  불용어 제거
 def remove_stopwords(tokens):
-     코드 내용
 이 함수는 토큰에서 불용어를 제거하는 함수임. 이로써 분석에 불필요한 단어가 제거됨.
 
 4. main()
  메인 함수
 def main():
-    코드 내용
 이 함수는 코드의 메인 함수로, 사용자로부터 검색 키워드를 입력받고 전체 프로세스를 실행됨.
 
 5. 워드 클라우드 생성 및 시각화
