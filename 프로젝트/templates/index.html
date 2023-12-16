@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 검색 결과</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        .special-row td {
+            width: auto;
+            border-style: dotted;  /* 각 셀의 너비를 조절 */
+        }
+        th:first-child,
+        td:first-child {
+            border-left: 1px solid black; 
+        }
+        th:last-child,
+        td:last-child {
+            border-right: 1px solid black; 
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        <label for="keyword">검색어:</label>
+        <input type="text" id="keyword" name="keyword" required>
+        <button type="submit">검색</button>
+    </form>
+
+    {% if keyword %}
+        <h2>"{{ keyword }}"에 대한 제품 검색 결과</h2>
+    {% else %}
+        <h2>검색어를 입력하세요.</h2>
+    {% endif %}
+
+    {% if res_list %}
+        <table>
+            {% for product in res_list %}
+                <tr>
+                    <th>상품 이미지</th>
+                    <th>할인율</th>
+                    <th>가격</th>
+                    <th colspan="2">제품</th>
+                </tr>
+                <tr>
+                    <td>상품 이미지(다른 속성,다른 html 파일 이용 등 전체 크롤링한 이미지 첨부) </td>
+                    <td>{{ product.Discount }}</td>
+                    <td>{{ product.Price }}</td>
+                    <td colspan="2">{{ product.Product }}</td>
+                </tr>
+                <tr class="special-row">
+                    <td>큰 손해</td>
+                    <td>손해</td>
+                    <td>본전</td>
+                    <td>이득</td>
+                    <td>큰 이득</td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <div>
+                            <canvas id="myChart{{ loop.index }}"></canvas>
+                        </div>
+                        
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        
+                        <script>
+                        const ctx{{ loop.index }} = document.getElementById('myChart{{ loop.index }}');
+                        
+                        new Chart(ctx{{ loop.index }}, {
+                            type: 'bar',
+                            data: {
+                            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                            datasets: [{
+                                label: '# of Votes',
+                                data: [12, 19, 3, 5, 2, 3],
+                                borderWidth: 1
+                            }]
+                            },
+                            options: {
+                            scales: {
+                                y: {
+                                beginAtZero: true
+                                }
+                            }
+                            }
+                        });
+                        </script>
+                    </td> <!-- 빈 행 추가 -->
+                </tr>
+                <table border="0">
+                <table border="0">
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>결과가 없습니다.</p>
+    {% endif %}
+</body>
+</html>
+
+
+
+
+
+
+
+
